@@ -1,6 +1,157 @@
-import Link from 'next/link';
-import {ArrowLeft,MapPin,Phone,Truck,ArrowUpLeft,Zap} from 'lucide-react';
-import Art from '@/components/Art';
-import {Benefits,ProductCard} from '@/components/Store';
-import {products} from '@/lib/products';
-export default function Home(){return <main><section className="hero"><div className="hero-grid wrap"><div className="hero-copy"><div className="eyebrow"><span/> انرژی تازه برای زندگی شهری</div><h1>شهر، منتظر<br/><em>حرکت توست.</em></h1><p>از ترافیک فاصله بگیر. به مسیرت انرژی بده.<br/>اسکوترهای برقی منتخب، برای روزهای پرجنب‌وجوش تو.</p><div className="hero-buttons"><Link href="/products" className="button gold-button">اسکوترت رو پیدا کن <ArrowLeft size={20}/></Link><Link href="/products?category=accessory" className="subtle-link">لوازم جانبی <ArrowUpLeft size={18}/></Link></div><div className="hero-stats"><div><strong>۷۰ <small>کیلومتر</small></strong><span>تا یک مسیر طولانی‌تر</span></div><div><strong>۱۰۰٪ <small>برقی</small></strong><span>انرژی پاک، حرکت هوشمند</span></div></div></div><div className="hero-visual"><div className="orbit"/><span className="vertical-label">MOVE DIFFERENT. LIVE ELECTRIC.</span><span className="big-word">MOVE</span><Art hero/><div className="hero-product"><span className="live-dot"/><div><small>انتخاب ویژه پکن کالا</small><strong dir="ltr">Xiaomi Electric Scooter 4 Pro</strong></div><Link aria-label="مشاهده شیائومی ۴ پرو" href="/products/xiaomi-4-pro"><ArrowUpLeft/></Link></div><div className="float-label"><Zap size={16}/> آماده برای مسیر تازه</div></div></div><div className="hero-bottom wrap"><span>اسکوتر برقی. آزادی بیشتر.</span><span dir="ltr">01 <i/> 03</span></div></section><Benefits/><section className="wrap featured"><div className="section-heading"><div><div className="eyebrow">منتخب پکن کالا</div><h2>هم‌مسیر بعدی تو</h2><p>برای رفت‌وآمد روزانه، برای کشف مسیرهای تازه.</p></div><Link className="text-link" href="/products">مشاهده همه محصولات <ArrowLeft size={18}/></Link></div><div className="product-grid">{products.slice(0,3).map(p=><ProductCard key={p.id} p={p}/>)}</div></section><section className="accessory-banner wrap"><div><div className="eyebrow">جزئیات، تفاوت می‌سازند</div><h2>مجهزتر حرکت کن.</h2><p>از کلاه ایمنی تا قفل؛ همراه‌های کوچک برای مسیرهای بزرگ.</p><Link href="/products?category=accessory" className="text-link">کشف لوازم جانبی <ArrowLeft size={18}/></Link></div><Art product={products[3]}/><span className="banner-word">GEAR UP</span></section><section id="delivery" className="wrap delivery"><div className="section-heading"><div><div className="eyebrow">از پکن کالا تا مسیر شما</div><h2>انتخاب با تو، تحویل با ما</h2></div><p>هر کجای ایران که هستی، همراهت هستیم.</p></div><div className="delivery-grid"><article><Truck/><span className="step">۰۱</span><h3>ارسال به سراسر ایران</h3><p>محصول انتخابی شما پس از تأیید موجودی و هماهنگی، به مقصدتان ارسال می‌شود. هزینه و زمان ارسال پیش از نهایی‌شدن سفارش اعلام خواهد شد.</p></article><article><MapPin/><span className="step">۰۲</span><h3>تحویل از انبار تهران</h3><p>با انتخاب تحویل حضوری در سبد خرید، درخواست رزرو آنلاین بدهید یا پیش از مراجعه تلفنی هماهنگ کنید. مراجعه بدون هماهنگی امکان‌پذیر نیست.</p><Link href="/cart" className="text-link">رزرو آنلاین تحویل <ArrowLeft size={16}/></Link></article></div><p className="demo-note"><Phone size={16}/> شماره تماس، آدرس انبار و ساعت تحویل پیش از راه‌اندازی فروشگاه تکمیل می‌شوند. رزرو فعلی آزمایشی است.</p></section></main>}
+import Link from "next/link";
+import {
+  ArrowLeft,
+  MapPin,
+  Phone,
+  Truck,
+  ArrowUpLeft,
+  Zap,
+} from "lucide-react";
+import Art from "@/components/Art";
+import { Benefits, ProductCard } from "@/components/Store";
+import { getProducts } from "@/lib/server/catalog";
+export default async function Home() {
+  const products = await getProducts();
+  return (
+    <main>
+      <section className="hero">
+        <div className="hero-grid wrap">
+          <div className="hero-copy">
+            <div className="eyebrow">
+              <span /> انرژی تازه برای زندگی شهری
+            </div>
+            <h1>
+              شهر، منتظر
+              <br />
+              <em>حرکت توست.</em>
+            </h1>
+            <p>
+              از ترافیک فاصله بگیر. به مسیرت انرژی بده.
+              <br />
+              اسکوترهای برقی منتخب، برای روزهای پرجنب‌وجوش تو.
+            </p>
+            <div className="hero-buttons">
+              <Link href="/products" className="button gold-button">
+                اسکوترت رو پیدا کن <ArrowLeft size={20} />
+              </Link>
+              <Link href="/products?category=accessory" className="subtle-link">
+                لوازم جانبی <ArrowUpLeft size={18} />
+              </Link>
+            </div>
+            <div className="hero-stats">
+              <div>
+                <strong>
+                  ۷۰ <small>کیلومتر</small>
+                </strong>
+                <span>تا یک مسیر طولانی‌تر</span>
+              </div>
+              <div>
+                <strong>
+                  ۱۰۰٪ <small>برقی</small>
+                </strong>
+                <span>انرژی پاک، حرکت هوشمند</span>
+              </div>
+            </div>
+          </div>
+          <div className="hero-visual">
+            <div className="orbit" />
+            <span className="vertical-label">
+              MOVE DIFFERENT. LIVE ELECTRIC.
+            </span>
+            <span className="big-word">MOVE</span>
+            <Art hero />
+            <div className="hero-product">
+              <span className="live-dot" />
+              <div>
+                <small>انتخاب ویژه پکن کالا</small>
+                <strong dir="ltr">Xiaomi Electric Scooter 4 Pro</strong>
+              </div>
+              <Link
+                aria-label="مشاهده شیائومی ۴ پرو"
+                href="/products/xiaomi-4-pro"
+              >
+                <ArrowUpLeft />
+              </Link>
+            </div>
+            <div className="float-label">
+              <Zap size={16} /> آماده برای مسیر تازه
+            </div>
+          </div>
+        </div>
+        <div className="hero-bottom wrap">
+          <span>اسکوتر برقی. آزادی بیشتر.</span>
+          <span dir="ltr">
+            01 <i /> 03
+          </span>
+        </div>
+      </section>
+      <Benefits />
+      <section className="wrap featured">
+        <div className="section-heading">
+          <div>
+            <div className="eyebrow">منتخب پکن کالا</div>
+            <h2>هم‌مسیر بعدی تو</h2>
+            <p>برای رفت‌وآمد روزانه، برای کشف مسیرهای تازه.</p>
+          </div>
+          <Link className="text-link" href="/products">
+            مشاهده همه محصولات <ArrowLeft size={18} />
+          </Link>
+        </div>
+        <div className="product-grid">
+          {products.slice(0, 3).map((p) => (
+            <ProductCard key={p.id} p={p} />
+          ))}
+        </div>
+      </section>
+      <section className="accessory-banner wrap">
+        <div>
+          <div className="eyebrow">جزئیات، تفاوت می‌سازند</div>
+          <h2>مجهزتر حرکت کن.</h2>
+          <p>از کلاه ایمنی تا قفل؛ همراه‌های کوچک برای مسیرهای بزرگ.</p>
+          <Link href="/products?category=accessory" className="text-link">
+            کشف لوازم جانبی <ArrowLeft size={18} />
+          </Link>
+        </div>
+        {products[3] && <Art product={products[3]} />}
+        <span className="banner-word">GEAR UP</span>
+      </section>
+      <section id="delivery" className="wrap delivery">
+        <div className="section-heading">
+          <div>
+            <div className="eyebrow">از پکن کالا تا مسیر شما</div>
+            <h2>انتخاب با تو، تحویل با ما</h2>
+          </div>
+          <p>هر کجای ایران که هستی، همراهت هستیم.</p>
+        </div>
+        <div className="delivery-grid">
+          <article>
+            <Truck />
+            <span className="step">۰۱</span>
+            <h3>ارسال به سراسر ایران</h3>
+            <p>
+              محصول انتخابی شما پس از تأیید موجودی و هماهنگی، به مقصدتان ارسال
+              می‌شود. هزینه و زمان ارسال پیش از نهایی‌شدن سفارش اعلام خواهد شد.
+            </p>
+          </article>
+          <article>
+            <MapPin />
+            <span className="step">۰۲</span>
+            <h3>تحویل از انبار تهران</h3>
+            <p>
+              با انتخاب تحویل حضوری در سبد خرید، درخواست رزرو آنلاین بدهید یا
+              پیش از مراجعه تلفنی هماهنگ کنید. مراجعه بدون هماهنگی امکان‌پذیر
+              نیست.
+            </p>
+            <Link href="/cart" className="text-link">
+              رزرو آنلاین تحویل <ArrowLeft size={16} />
+            </Link>
+          </article>
+        </div>
+        <p className="demo-note">
+          <Phone size={16} /> شماره تماس، آدرس انبار و ساعت تحویل پیش از
+          راه‌اندازی فروشگاه تکمیل می‌شوند. رزرو پس از تأیید مدیر نهایی می‌شود.
+        </p>
+      </section>
+    </main>
+  );
+}
