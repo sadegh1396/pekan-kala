@@ -1,32 +1,71 @@
 # پکن کالا — Pekan Kala
 
-Persian RTL demo storefront for the intended domain **pekan-kala.ir**. Built with Next.js App Router, TypeScript, Tailwind CSS 4, Lucide icons and a locally hosted Vazirmatn font (license in public/FONT-LICENSE.txt).
+فروشگاه فارسی و راست‌چین با Next.js App Router، Prisma و SQLite؛ همراه پنل مدیریت، ثبت سفارش و رزرو تحویل حضوری. فونت Vazirmatn به صورت محلی ارائه می‌شود. پرداخت آنلاین فعال نیست.
 
-## Run
+این نسخه به سرور Node.js نیاز دارد و خروجی استاتیک `out/` تولید نمی‌کند. هیچ تنظیم Nginx یا HTTPS تغییر نکرده است. پیش از استفاده تجاری، مشخصات محصولات، موجودی، نشانی انبار و قوانین فروش را بررسی و تکمیل کنید.
 
-```sh
+## پنل مدیریت و نصب روی Ubuntu
+
+پنل فارسی و راست‌چین در `/admin` و صفحه ورود در `/admin/login` است. از Node.js 22 LTS و یک کاربر سرویس اختصاصی استفاده کنید. SQLite برای یک نمونه برنامه روی یک سرور مناسب است؛ دیتابیس را روی دیسک پایدار محلی با دسترسی نوشتن فقط برای کاربر برنامه قرار دهید.
+
+```bash
 npm ci
-npm run dev
+cp .env.example .env
+chmod 600 .env
+# DATABASE_URL را به مسیر مطلق پایدار، مثلاً file:/var/lib/pekan-kala/store.db تغییر دهید.
+# APP_ORIGIN را دقیقاً برابر مبدا HTTPS فروشگاه، بدون اسلش انتهایی قرار دهید.
+npm run db:generate
+npm run db:migrate
+npm run db:seed
 ```
 
-## Check and build
+Seed تمام شش محصول `lib/products.ts` را با تمام اطلاعات قبلی منتقل می‌کند؛ اجرای مجدد رکوردهای موجود، قیمت و موجودی تغییرکرده را بازنویسی نمی‌کند. فایل اصلی نیز حفظ شده است. چون موجودی قبلی مشخص نبود، موجودی اولیه صفر است؛ مدیر باید مقدار واقعی را ثبت کند. فروشگاه پس از مهاجرت از دیتابیس می‌خواند. حذف محصول به صورت غیرفعال‌سازی است و جزئیات تاریخی سفارش‌ها حفظ می‌شوند. تصویر با نشانی HTTPS یا مسیر محلی فایل موجود تنظیم می‌شود؛ تصویر خالی از تصویرسازی قبلی استفاده می‌کند.
 
-```sh
-npm run build
+ساخت یا بازنشانی مدیر، بدون رمز پیش‌فرض و بدون ذخیره رمز در تاریخچه شل:
+
+```bash
+read -r -p 'Admin email: ' ADMIN_EMAIL
+read -r -s -p 'Admin password (14+ characters): ' ADMIN_PASSWORD
+export ADMIN_EMAIL ADMIN_PASSWORD
+npm run admin:create
+unset ADMIN_EMAIL ADMIN_PASSWORD
+```
+
+این دستور را در محیطی اجرا کنید که `DATABASE_URL` در دسترس باشد. تغییر رمز تمام نشست‌های آن مدیر را باطل می‌کند. برای اجرای اسکریپت‌های tsx با فایل `.env` می‌توانید ابتدا متغیرهای آن را در محیط سرویس تنظیم کنید؛ دستورهای زیر با Node نیز فایل را بارگذاری می‌کنند:
+
+```bash
+node --env-file=.env --import tsx scripts/seed.ts
+node --env-file=.env --import tsx scripts/admin.ts
 npm run typecheck
+npm test
+npm run build
+npm start -- --port 3000
 ```
 
-The production build exports the homepage, catalog, six product detail pages and cart to `out/`. No deployment or domain connection has been performed.
+در production از `NODE_ENV=production` و HTTPS موجود استفاده کنید. کوکی نشست در production دارای Secure، HttpOnly و SameSite=Strict است و پس از ۸ ساعت منقضی می‌شود. شناسه تصادفی نشست فقط به شکل SHA-256 در دیتابیس ذخیره می‌شود. رمزها با salt تصادفی و scrypt هش می‌شوند. پس از ۵ تلاش ناموفق برای هر حساب، ورود تا پایان بازه ۱۵ دقیقه محدود می‌شود. تمام صفحات و Server Actionهای مدیریت مجوز مدیر را بررسی می‌کنند؛ حفاظت Origin در Server Actions توسط Next.js انجام می‌شود. API عمومی سفارش فقط Origin تنظیم‌شده را می‌پذیرد. در استقرار عمومی محدودیت نرخ درخواست در لایه موجود زیرساخت نیز توصیه می‌شود.
 
-## Included
+سفارش و رزرو حضوری همراه نام، موبایل، نشانی یا تاریخ در دیتابیس ثبت می‌شوند. قیمت از دیتابیس خوانده می‌شود و کاهش موجودی با ثبت سفارش در یک تراکنش انجام می‌شود. لغو سفارش موجودی را فقط یک بار بازمی‌گرداند؛ سفارش لغوشده قابل بازگشایی نیست. تاریخ رزرو صرفاً درخواست مشتری است و نیاز به تأیید مدیر دارد. پرداخت واقعی و اتصال به درگاه فعال نشده است. مبلغ داشبورد جمع سفارش‌های تکمیل‌شده است، نه گزارش دریافت وجه.
 
-- Responsive black, gold and red visual design; Persian text and RTL layout.
-- Sample scooters/accessories, prices in toman, category filters, search and price sorting.
-- Product details and a browser-local persistent cart with quantity and removal controls.
-- Nationwide delivery and Tehran warehouse pickup instructions.
-- Pickup reservation demonstration with validated contact fields. Form data is never transmitted or saved; no actual reservation is made.
-- Disabled payment button; no gateway, order backend or real payment integration.
+برنامه را با systemd یا مدیر پردازش فعلی، با WorkingDirectory پروژه و EnvironmentFile فایل `.env` اجرا کنید و سرویس را فقط به کاربر برنامه بسپارید. فایل `.env` باید مجوز 600 داشته باشد. تنظیمات Nginx، HTTPS، گواهی‌ها و درگاه پرداخت در این تغییر دست‌نخورده هستند. از دیتابیس با ابزار `sqlite3 /path/store.db '.backup /path/backup.db'` نسخه پشتیبان سازگار تهیه کنید؛ پیش از هر مهاجرت نسخه پشتیبان بگیرید. برای ارتقا `npm ci`، `db:generate`، `db:migrate` و `build` را اجرا و سپس سرویس فعلی برنامه را راه‌اندازی مجدد کنید؛ از `prisma migrate reset` روی داده واقعی استفاده نکنید.
 
-## Before launch
+تست‌ها را فقط روی دیتابیس مجزای آزمایشی اجرا کنید:
 
-Replace sample inventory, pricing, product illustrations and specifications with verified commercial information. Add real warehouse address, contact telephone, delivery rules, warranty/return policy and legal details. Connect a reservation backend and payment service only when authorized. Enable indexing after replacing the demo data (metadata currently disables indexing). The domain is metadata only and has not been registered or configured.
+```bash
+DATABASE_URL=file:/absolute/path/test.db npm run db:migrate
+DATABASE_URL=file:/absolute/path/test.db npm test
+```
+
+### نتیجه اعتبارسنجی این تغییر
+
+`typecheck`، build تولیدی و چهار تست انتقال بدون بازنویسی، رمز، اعتبارسنجی و ثبت تراکنشی سفارش موفق بودند. آزمایش مرورگر Chromium با عرض ۳۹۰ پیکسل نیز ورود، دسترسی محافظت‌شده، ویژگی‌های کوکی، ویرایش موجودی، ثبت سفارش، لغو و بازگشت موجودی، خروج و رد Origin نامعتبر را پوشش داد. در محیط توسعه این تغییر، دامنه دانلود موتور CLI Prisma با 403 مسدود بود؛ SQL مهاجرت روی SQLite آزمایشی مستقیماً اعمال شد و client با درایور محلی libSQL (SQLite) ساخته و آزمایش شد. بنابراین اجرای واقعی `prisma migrate deploy` در این محیط تأیید نشده است؛ دستور استاندارد آن در راهنمای نصب آمده و روی Ubuntu به دسترسی دانلود موتور CLI نیاز دارد. هیچ داده یا فایل دیتابیس آزمایشی در Git ثبت نمی‌شود.
+
+برای تکرار آزمایش مرورگر، Chromium نصب‌شده را با `CHROMIUM_PATH` مشخص کنید و برنامه production را روی localhost:3000 با همان دیتابیس تست اجرا کنید. در یک ترمینال دیگر:
+
+```bash
+# پس از مهاجرت و seed دیتابیس مجزای test.db:
+DATABASE_URL=file:/absolute/path/test.db APP_ORIGIN=http://localhost:3000 npm start
+# در ترمینال دوم:
+DATABASE_URL=file:/absolute/path/test.db CHROMIUM_PATH=/usr/bin/chromium npm run test:e2e
+```
+
+آزمایش مرورگر کاربر موقت ایجاد می‌کند و اطلاعات سفارش آزمایشی را در پایان پاک می‌کند. هر دو فرایند باید از یک مسیر مطلق دیتابیس استفاده کنند. برای توسعه، پس از مهاجرت و seed، `npm run dev` را اجرا کنید؛ `.env` را Next.js خودکار می‌خواند. برای `.env` توسعه، `APP_ORIGIN=http://localhost:3000` قرار دهید.
